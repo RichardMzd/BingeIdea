@@ -20,7 +20,7 @@ class LoginViewController: UIViewController {
     
   
     var iconClick = false
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,44 +37,48 @@ class LoginViewController: UIViewController {
         errorLabel.alpha = 0
     }
     
-    func hideAndShowPassword(_ textfield: UITextField) {
-        let iconImage = UIImage(named: "hide")
-        let contentView = UIView()
-        let imageIcon = UIImageView(image: iconImage)
-        // Set the original size or a default size if the image is nil
-        let iconWidth = iconImage?.size.width ?? 24
-        let iconHeight = iconImage?.size.height ?? 24
+    func hideAndShowPassword(_ textField: UITextField) {
+       let iconImage = UIImage(systemName: "eye")
+       let contentView = UIView()
+       let imageIcon = UIImageView(image: iconImage)
+       
+       // Set the tint color
+       imageIcon.tintColor = UIColor(named: "blueNavy")
+       
+       // Set a fixed size for the icon
+       let iconSize = CGSize(width: 26, height: 22)
+       
+       contentView.addSubview(imageIcon)
+       
+       // Adjust the position of contentView
+       contentView.frame = CGRect(x: -30, y: textField.frame.height - iconSize.height - 5, width: iconSize.width, height: iconSize.height)
+       imageIcon.frame = CGRect(x: 0, y: 0, width: iconSize.width, height: iconSize.height)
+       
+       textField.rightView = contentView
+       textField.rightViewMode = .always
+       
+       let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+       tapGestureRecognizer.numberOfTapsRequired = 1
+       tapGestureRecognizer.cancelsTouchesInView = false
+       imageIcon.isUserInteractionEnabled = true
+       imageIcon.addGestureRecognizer(tapGestureRecognizer)
+   }
 
-        // Adjust the size of the icon (e.g., multiply by 1.2 to increase by 20%)
-        let enlargedWidth = iconWidth * 0.8
-        let enlargedHeight = iconHeight * 0.8
-        
-        contentView.addSubview(imageIcon)
-        
-        contentView.frame = CGRect(x: 0, y: 0, width: enlargedWidth, height: enlargedHeight)
-        imageIcon.frame = CGRect(x: -25, y: -5, width: enlargedWidth, height: enlargedHeight)
-        
-        textfield.rightView = contentView
-        textfield.rightViewMode = .always
-        
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
-        imageIcon.isUserInteractionEnabled = true
-        imageIcon.addGestureRecognizer(tapGestureRecognizer)
-    }
     
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
-            let tappedImage = tapGestureRecognizer.view as? UIImageView
+        let tappedImage = tapGestureRecognizer.view as? UIImageView
 
         if iconClick {
             iconClick = false
-                tappedImage?.image = UIImage(named: "eye")
-                passwordTextField.isSecureTextEntry = false
-            } else {
-                iconClick = true
-                tappedImage?.image = UIImage(named: "hide")
-                passwordTextField.isSecureTextEntry = true
-            }
+            tappedImage?.image = UIImage(systemName: "eye")
+            passwordTextField.isSecureTextEntry = true
+        } else {
+            iconClick = true
+            tappedImage?.image = UIImage(systemName: "eye.slash")
+            passwordTextField.isSecureTextEntry = false
         }
+    }
+
     
     func setupElements() {
         
@@ -151,7 +155,7 @@ class LoginViewController: UIViewController {
                 print("LastName from database: \(lastName)")
                 
                 // Appelle la fonction pour afficher la vue home avec les données extraites
-                self.showHomeViewController(firstName: firstName, lastName: lastName)
+                self.showHomeViewController(firstName: firstName)
             } else {
                 // Si les propriétés attendues ne sont pas présentes dans le document
                 print("Le document ne contient pas les propriétés 'firstname' et/ou 'lastname'")
@@ -165,11 +169,11 @@ class LoginViewController: UIViewController {
     
     
     
-    func showHomeViewController(firstName: String, lastName: String) {
+    func showHomeViewController(firstName: String) {
         let homeViewController = self.storyboard?.instantiateViewController(withIdentifier: "HomeVC") as? HomeViewController
         
         // Passer le prénom à HomeViewController
-        homeViewController?.userName = "\(firstName) \(lastName)"
+        homeViewController?.userName = "\(firstName)"
         
         if let homeViewController = homeViewController {
             self.navigationController?.pushViewController(homeViewController, animated: true)
